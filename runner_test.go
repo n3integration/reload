@@ -1,7 +1,6 @@
 package reload
 
 import (
-	"bytes"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -60,28 +59,5 @@ func Test_Runner_Kill(t *testing.T) {
 	if runtime.GOOS != "windows" {
 		// does not seem to work as expected on windows
 		refute(t, cmd1, cmd3)
-	}
-}
-
-func Test_Runner_SetWriter(t *testing.T) {
-	buff := bytes.NewBufferString("")
-	expect(t, buff.String(), "")
-
-	bin := filepath.Join("testdata", "writing_output")
-	if runtime.GOOS == "windows" {
-		bin += ".bat"
-	}
-
-	runner := NewRunner(bin)
-	runner.SetWriter(buff)
-
-	cmd, err := runner.Run()
-	cmd.Wait()
-	expect(t, err, nil)
-
-	if runtime.GOOS == "windows" {
-		expect(t, buff.String(), "Hello world\r\n")
-	} else {
-		expect(t, buff.String(), "Hello world\n")
 	}
 }
