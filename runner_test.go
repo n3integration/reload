@@ -7,8 +7,6 @@ import (
 	"runtime"
 	"testing"
 	"time"
-
-	"github.com/codegangsta/gin/lib"
 )
 
 func Test_NewRunner(t *testing.T) {
@@ -16,36 +14,33 @@ func Test_NewRunner(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		filename += ".bat"
 	}
-	bin := filepath.Join("test_fixtures", filename)
+	bin := filepath.Join("testdata", filename)
 
-	runner := gin.NewRunner(bin)
+	runner := NewRunner(bin)
 
 	fi, _ := runner.Info()
 	expect(t, fi.Name(), filename)
 }
 
 func Test_Runner_Run(t *testing.T) {
-	bin := filepath.Join("test_fixtures", "writing_output")
+	bin := filepath.Join("testdata", "writing_output")
 	if runtime.GOOS == "windows" {
 		bin += ".bat"
 	}
-	runner := gin.NewRunner(bin)
+	runner := NewRunner(bin)
 
 	cmd, err := runner.Run()
 	expect(t, err, nil)
 	expect(t, cmd.Process == nil, false)
 }
 
-// func Test_Runner_SettingEnvironment(t *testing.T) {
-// }
-
 func Test_Runner_Kill(t *testing.T) {
-	bin := filepath.Join("test_fixtures", "writing_output")
+	bin := filepath.Join("testdata", "writing_output")
 	if runtime.GOOS == "windows" {
 		bin += ".bat"
 	}
 
-	runner := gin.NewRunner(bin)
+	runner := NewRunner(bin)
 
 	cmd1, err := runner.Run()
 	expect(t, err, nil)
@@ -72,12 +67,12 @@ func Test_Runner_SetWriter(t *testing.T) {
 	buff := bytes.NewBufferString("")
 	expect(t, buff.String(), "")
 
-	bin := filepath.Join("test_fixtures", "writing_output")
+	bin := filepath.Join("testdata", "writing_output")
 	if runtime.GOOS == "windows" {
 		bin += ".bat"
 	}
 
-	runner := gin.NewRunner(bin)
+	runner := NewRunner(bin)
 	runner.SetWriter(buff)
 
 	cmd, err := runner.Run()

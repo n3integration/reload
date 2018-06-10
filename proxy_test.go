@@ -2,7 +2,6 @@ package reload
 
 import (
 	"fmt"
-	"github.com/codegangsta/gin/lib"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -12,7 +11,7 @@ import (
 func Test_NewProxy(t *testing.T) {
 	builder := NewMockBuilder()
 	runner := NewMockRunner()
-	proxy := gin.NewProxy(builder, runner)
+	proxy := NewProxy(builder, runner)
 
 	expect(t, proxy != nil, true)
 }
@@ -20,9 +19,9 @@ func Test_NewProxy(t *testing.T) {
 func Test_Proxy_Run(t *testing.T) {
 	builder := NewMockBuilder()
 	runner := NewMockRunner()
-	proxy := gin.NewProxy(builder, runner)
+	proxy := NewProxy(builder, runner)
 
-	config := &gin.Config{}
+	config := &Config{}
 
 	proxy.Run(config)
 	defer proxy.Close()
@@ -31,7 +30,7 @@ func Test_Proxy_Run(t *testing.T) {
 func Test_Proxying(t *testing.T) {
 	builder := NewMockBuilder()
 	runner := NewMockRunner()
-	proxy := gin.NewProxy(builder, runner)
+	proxy := NewProxy(builder, runner)
 
 	// create a test server and see if we can proxy a request
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +38,7 @@ func Test_Proxying(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &gin.Config{
+	config := &Config{
 		Port:    5678,
 		ProxyTo: ts.URL,
 	}
@@ -60,7 +59,7 @@ func Test_Proxying(t *testing.T) {
 func Test_Proxying_Websocket(t *testing.T) {
 	builder := NewMockBuilder()
 	runner := NewMockRunner()
-	proxy := gin.NewProxy(builder, runner)
+	proxy := NewProxy(builder, runner)
 
 	// create a test server and see if we can proxy a websocket request
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +67,7 @@ func Test_Proxying_Websocket(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	config := &gin.Config{
+	config := &Config{
 		Port:    5678,
 		ProxyTo: ts.URL,
 	}
@@ -94,9 +93,9 @@ func Test_Proxying_Build_Errors(t *testing.T) {
 	builder := NewMockBuilder()
 	builder.MockErrors = "Foo bar here are some errors"
 	runner := NewMockRunner()
-	proxy := gin.NewProxy(builder, runner)
+	proxy := NewProxy(builder, runner)
 
-	config := &gin.Config{
+	config := &Config{
 		Port:    5679,
 		ProxyTo: "http://localhost:3000",
 	}

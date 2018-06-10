@@ -1,12 +1,11 @@
 package reload
 
 import (
-	"github.com/codegangsta/gin/lib"
 	"testing"
 )
 
 func Test_LoadConfig(t *testing.T) {
-	config, err := gin.LoadConfig("test_fixtures/config.json")
+	config, err := LoadConfig("testdata/config.json")
 
 	expect(t, err, nil)
 	expect(t, config.Port, 5678)
@@ -14,15 +13,15 @@ func Test_LoadConfig(t *testing.T) {
 }
 
 func Test_LoadConfig_WithNonExistantFile(t *testing.T) {
-	_, err := gin.LoadConfig("im/not/here.json")
+	_, err := LoadConfig("im/not/here.json")
 
 	refute(t, err, nil)
 	expect(t, err.Error(), "Unable to read configuration file im/not/here.json")
 }
 
 func Test_LoadConfig_WithMalformedFile(t *testing.T) {
-	_, err := gin.LoadConfig("test_fixtures/bad_config.json")
+	_, err := LoadConfig("testdata/bad_config.json")
 
 	refute(t, err, nil)
-	expect(t, err.Error(), "Unable to parse configuration file test_fixtures/bad_config.json")
+	expect(t, err.Error(), "Unable to parse configuration file testdata/bad_config.json")
 }

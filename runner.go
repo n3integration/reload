@@ -106,8 +106,7 @@ func (r *runner) runBin() error {
 		return err
 	}
 
-	err = r.command.Start()
-	if err != nil {
+	if err = r.command.Start(); err != nil {
 		return err
 	}
 
