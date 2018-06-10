@@ -188,8 +188,13 @@ func shutdown(runner reload.Runner) {
 		log.Println("received signal: ", s)
 		err := runner.Kill()
 		if err != nil {
-			log.Print("error killing: ", err)
+			log.Print("failed to terminate: ", err)
 		}
+		f, _ := runner.Info()
+		if err := os.Remove(f.Name()); err != nil {
+			log.Println("failed to cleanup:", err)
+		}
+		log.Print("exiting")
 		os.Exit(1)
 	}()
 }
