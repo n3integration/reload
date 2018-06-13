@@ -1,4 +1,4 @@
-package reload
+package runtime
 
 import (
 	"fmt"
@@ -8,9 +8,13 @@ import (
 	"strings"
 )
 
+// Builder provides a binary builder
 type Builder interface {
+	// Build creates the temporal executable
 	Build() error
+	// Binary returns the reference to the runtime binary
 	Binary() string
+	// Errors returns any errors from the executable
 	Errors() string
 }
 
@@ -22,6 +26,7 @@ type builder struct {
 	buildArgs []string
 }
 
+// New constructs a new Builder
 func NewBuilder(dir string, bin string, wd string, buildArgs []string) Builder {
 	if len(bin) == 0 {
 		bin = "bin"

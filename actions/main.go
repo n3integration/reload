@@ -1,4 +1,4 @@
-package cli
+package actions
 
 import (
 	"fmt"
@@ -11,7 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/n3integration/reload"
 	"golang.org/x/time/rate"
 	"gopkg.in/urfave/cli.v1"
 
@@ -19,13 +18,14 @@ import (
 	"github.com/codegangsta/envy/lib"
 	"github.com/fsnotify/fsnotify"
 	"github.com/mattn/go-shellwords"
+	"github.com/n3integration/reload/runtime"
 )
 
 var notifier = notificator.New(notificator.Options{
 	AppName: "Reload Build",
 })
 
-func MainAction(c *cli.Context) {
+func Main(c *cli.Context) {
 	laddr := c.GlobalString("laddr")
 	port := c.GlobalInt("port")
 	all := c.GlobalBool("all")
@@ -56,12 +56,12 @@ func MainAction(c *cli.Context) {
 		buildPath = c.GlobalString("path")
 	}
 
-	builder := reload.NewBuilder(buildPath, c.GlobalString("bin"), wd, buildArgs)
-	runner := reload.NewRunner(filepath.Join(wd, builder.Binary()), c.Args()...)
+	builder := runtime.NewBuilder(buildPath, c.GlobalString("bin"), wd, buildArgs)
+	runner := runtime.NewRunner(filepath.Join(wd, builder.Binary()), c.Args()...)
 	runner.SetWriter(os.Stdout)
-	proxy := reload.NewProxy(builder, runner)
+	proxy := runtime.NewProxy(builder, runner)
 
-	config := &reload.Config{
+	config := &runtime.Config{
 		Laddr:    laddr,
 		Port:     port,
 		ProxyTo:  "http://localhost:" + appPort,
@@ -92,7 +92,7 @@ func MainAction(c *cli.Context) {
 	})
 }
 
-func build(builder reload.Builder, runner reload.Runner, logger *log.Logger) {
+func build(builder runtime.Builder, runner runtime.Runner, logger *log.Logger) {
 	logger.Println("Building...")
 	if notifications {
 		notifier.Push("Build Started", "Building "+builder.Binary()+"...", "", notificator.UR_NORMAL)
@@ -180,7 +180,7 @@ func walk(watcher *fsnotify.Watcher, watchPath string, excludeDirs []string) err
 	})
 }
 
-func shutdown(runner reload.Runner) {
+func shutdown(runner runtime.Runner) {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {

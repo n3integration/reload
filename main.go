@@ -1,26 +1,18 @@
-package cli
+package main
 
 import (
-	"log"
 	"os"
 
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/n3integration/reload/actions"
 )
 
-var (
-	logger        = log.New(os.Stdout, "[reload] ", 0)
-	immediate     = false
-	colorGreen    = string([]byte{27, 91, 57, 55, 59, 51, 50, 59, 49, 109})
-	colorRed      = string([]byte{27, 91, 57, 55, 59, 51, 49, 59, 49, 109})
-	colorReset    = string([]byte{27, 91, 48, 109})
-	notifications = false
-)
-
-func Exec() {
+func main() {
 	app := cli.NewApp()
 	app.Name = "reload"
 	app.Usage = "A live reload utility for Go web applications."
-	app.Action = MainAction
+	app.Action = actions.Main
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "laddr,l",
@@ -106,13 +98,13 @@ func Exec() {
 			Name:      "run",
 			ShortName: "r",
 			Usage:     "Run the reload proxy in the current working directory",
-			Action:    MainAction,
+			Action:    actions.Main,
 		},
 		{
 			Name:      "env",
 			ShortName: "e",
 			Usage:     "Display environment variables set by the .env file",
-			Action:    EnvAction,
+			Action:    actions.Env,
 		},
 	}
 	app.Run(os.Args)

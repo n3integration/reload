@@ -1,10 +1,12 @@
-package reload
+package runtime
 
 import (
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/n3integration/reload/test"
 )
 
 func Test_Builder_Build_Success(t *testing.T) {
@@ -21,12 +23,12 @@ func Test_Builder_Build_Success(t *testing.T) {
 
 	builder := NewBuilder(dir, bin, wd, []string{})
 	err = builder.Build()
-	expect(t, err, nil)
+	test.Expect(t, err, nil)
 
 	file, err := os.Open(filepath.Join(wd, bin))
 	if err != nil {
 		t.Fatalf("File has not been written: %v", err)
 	}
 
-	refute(t, file, nil)
+	test.Refute(t, file, nil)
 }

@@ -1,4 +1,4 @@
-package reload
+package runtime
 
 import (
 	"io"
@@ -10,10 +10,15 @@ import (
 	"time"
 )
 
+// Runner provides the executable runtime
 type Runner interface {
+	// Run executes the temporal binary
 	Run() (*exec.Cmd, error)
+	// Info provides file metadata about the runtime executable
 	Info() (os.FileInfo, error)
+	// SetWriter provides an output sink for the runtime
 	SetWriter(io.Writer)
+	// Kill terminates the executable
 	Kill() error
 }
 
@@ -25,6 +30,7 @@ type runner struct {
 	starttime time.Time
 }
 
+// NewRunner constructs a new runtime
 func NewRunner(bin string, args ...string) Runner {
 	return &runner{
 		bin:       bin,

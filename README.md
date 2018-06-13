@@ -1,17 +1,17 @@
 Reload [ ![Codeship Status for n3integration/reload](https://app.codeship.com/projects/89707150-4e72-0136-7326-322e9f850b54/status?branch=master)](https://app.codeship.com/projects/293485)
 [![codecov](https://codecov.io/gh/n3integration/reload/branch/master/graph/badge.svg)](https://codecov.io/gh/n3integration/reload)
-[![Go Report Card](https://goreportcard.com/badge/github.com/n3integration/reload)](https://goreportcard.com/report/github.com/n3integration/reload)
-[![Documentation](https://godoc.org/github.com/n3integration/reload?status.svg)](http://godoc.org/github.com/n3integration/reload)
 ========
 
-`reload` is a simple command line utility for live-reloading Go web applications.
+`reload` is a command line utility for live-reloading Go web applications. It is
+a fork of the gin project originally written by [Jeremy Saenz](codegangsta/gin).
+
 Just run `reload` in your app directory and your web app will be served with
 `reload` as a proxy. `reload` will automatically recompile your code when it
 detects a change. Your app will be restarted the next time it receives an
-HTTP request.
+HTTP request (unless the `--immediate` flag is passed).
 
 `reload` adheres to the "silence is golden" principle, so it will only complain
-if there was a compiler error or if you succesfully compile after an error.
+if there was a compiler error or if you successfully compile after an error.
 
 ## Installation
 
@@ -19,7 +19,7 @@ Assuming you have a working Go environment and `GOPATH/bin` is in your
 `PATH`, `reload` is a breeze to install:
 
 ```shell
-go get github.com/n3integration/reload
+go get -u github.com/n3integration/reload
 ```
 
 Then verify that `reload` was installed correctly:
@@ -51,11 +51,9 @@ Options
    --version, -v                 print the version
 ```
 
-## Supporting Reload in Your Web app
+## Supporting Reload in Your Web App
 `reload` assumes that your web app binds itself to the `PORT` environment
-variable so it can properly proxy requests to your app. Web frameworks
-like [Martini](http://github.com/codegangsta/martini) do this out of
-the box.
+variable so it can properly proxy requests to your app.
 
 ## Using flags?
 When you normally start your server with [flags](https://godoc.org/flag)

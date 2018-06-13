@@ -1,4 +1,4 @@
-package reload
+package runtime
 
 import (
 	"crypto/tls"
@@ -11,7 +11,14 @@ import (
 	"strings"
 )
 
-type Proxy struct {
+// Proxy provides a web server proxy
+type Proxy interface {
+	// Run bootstraps the web service proxy
+	Run(config *Config) error
+	io.Closer
+}
+
+type proxy struct {
 	listener net.Listener
 	proxy    *httputil.ReverseProxy
 	builder  Builder
@@ -19,14 +26,15 @@ type Proxy struct {
 	to       *url.URL
 }
 
-func NewProxy(builder Builder, runner Runner) *Proxy {
-	return &Proxy{
+// NewProxy constructs a new Proxy
+func NewProxy(builder Builder, runner Runner) Proxy {
+	return &proxy{
 		builder: builder,
 		runner:  runner,
 	}
 }
 
-func (p *Proxy) Run(config *Config) error {
+func (p *proxy) Run(config *Config) error {
 	// create our reverse proxy
 	url, err := url.Parse(config.ProxyTo)
 	if err != nil {
@@ -61,11 +69,11 @@ func (p *Proxy) Run(config *Config) error {
 	return nil
 }
 
-func (p *Proxy) Close() error {
+func (p *proxy) Close() error {
 	return p.listener.Close()
 }
 
-func (p *Proxy) defaultHandler(res http.ResponseWriter, req *http.Request) {
+func (p *proxy) defaultHandler(res http.ResponseWriter, req *http.Request) {
 	errors := p.builder.Errors()
 	if len(errors) > 0 {
 		res.Write([]byte(errors))

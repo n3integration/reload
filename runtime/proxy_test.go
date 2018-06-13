@@ -1,4 +1,4 @@
-package reload
+package runtime
 
 import (
 	"fmt"
@@ -6,19 +6,21 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/n3integration/reload/test"
 )
 
 func Test_NewProxy(t *testing.T) {
-	builder := NewMockBuilder()
-	runner := NewMockRunner()
+	builder := test.NewMockBuilder()
+	runner := test.NewMockRunner()
 	proxy := NewProxy(builder, runner)
 
-	expect(t, proxy != nil, true)
+	test.Expect(t, proxy != nil, true)
 }
 
 func Test_Proxy_Run(t *testing.T) {
-	builder := NewMockBuilder()
-	runner := NewMockRunner()
+	builder := test.NewMockBuilder()
+	runner := test.NewMockRunner()
 	proxy := NewProxy(builder, runner)
 
 	config := &Config{}
@@ -28,8 +30,8 @@ func Test_Proxy_Run(t *testing.T) {
 }
 
 func Test_Proxying(t *testing.T) {
-	builder := NewMockBuilder()
-	runner := NewMockRunner()
+	builder := test.NewMockBuilder()
+	runner := test.NewMockRunner()
 	proxy := NewProxy(builder, runner)
 
 	// create a test server and see if we can proxy a request
@@ -45,20 +47,20 @@ func Test_Proxying(t *testing.T) {
 
 	err := proxy.Run(config)
 	defer proxy.Close()
-	expect(t, err, nil)
+	test.Expect(t, err, nil)
 
 	res, err := http.Get("http://localhost:5678")
-	expect(t, err, nil)
-	expect(t, res == nil, false)
+	test.Expect(t, err, nil)
+	test.Expect(t, res == nil, false)
 	greeting, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	expect(t, fmt.Sprintf("%s", greeting), "Hello world\n")
-	expect(t, runner.DidRun, true)
+	test.Expect(t, fmt.Sprintf("%s", greeting), "Hello world\n")
+	test.Expect(t, runner.DidRun, true)
 }
 
 func Test_Proxying_Websocket(t *testing.T) {
-	builder := NewMockBuilder()
-	runner := NewMockRunner()
+	builder := test.NewMockBuilder()
+	runner := test.NewMockRunner()
 	proxy := NewProxy(builder, runner)
 
 	// create a test server and see if we can proxy a websocket request
@@ -74,25 +76,25 @@ func Test_Proxying_Websocket(t *testing.T) {
 
 	err := proxy.Run(config)
 	defer proxy.Close()
-	expect(t, err, nil)
+	test.Expect(t, err, nil)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", "http://localhost:5678", nil)
 	req.Header.Set("Connection", "Upgrade")
 	req.Header.Set("Upgrade", "Websocket")
 	res, _ := client.Do(req)
-	expect(t, err, nil)
-	expect(t, res == nil, false)
+	test.Expect(t, err, nil)
+	test.Expect(t, res == nil, false)
 	greeting, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	expect(t, fmt.Sprintf("%s", greeting), "Hello world\n")
-	expect(t, runner.DidRun, true)
+	test.Expect(t, fmt.Sprintf("%s", greeting), "Hello world\n")
+	test.Expect(t, runner.DidRun, true)
 }
 
 func Test_Proxying_Build_Errors(t *testing.T) {
-	builder := NewMockBuilder()
+	builder := test.NewMockBuilder()
 	builder.MockErrors = "Foo bar here are some errors"
-	runner := NewMockRunner()
+	runner := test.NewMockRunner()
 	proxy := NewProxy(builder, runner)
 
 	config := &Config{
@@ -102,12 +104,12 @@ func Test_Proxying_Build_Errors(t *testing.T) {
 
 	err := proxy.Run(config)
 	defer proxy.Close()
-	expect(t, err, nil)
+	test.Expect(t, err, nil)
 
 	res, err := http.Get("http://localhost:5679")
-	expect(t, err, nil)
-	expect(t, res == nil, false)
+	test.Expect(t, err, nil)
+	test.Expect(t, res == nil, false)
 	errors, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	expect(t, fmt.Sprintf("%s", errors), "Foo bar here are some errors")
+	test.Expect(t, fmt.Sprintf("%s", errors), "Foo bar here are some errors")
 }

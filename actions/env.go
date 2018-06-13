@@ -1,4 +1,4 @@
-package cli
+package actions
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func EnvAction(c *cli.Context) {
+func Env(c *cli.Context) {
 	logPrefix := c.GlobalString("logPrefix")
 	logger.SetPrefix(fmt.Sprintf("[%s] ", logPrefix))
 
