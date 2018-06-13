@@ -3,7 +3,7 @@ Reload [ ![Codeship Status for n3integration/reload](https://app.codeship.com/pr
 ========
 
 `reload` is a command line utility for live-reloading Go web applications. It is
-a fork of the [gin]((https://github.com/codegangsta/gin) project originally written by [Jeremy Saenz](https://github.com/codegangsta).
+a fork of the [gin](https://github.com/codegangsta/gin) project originally written by [Jeremy Saenz](https://github.com/codegangsta).
 
 Just run `reload` in your app directory and your web app will be served with
 `reload` as a proxy. `reload` will automatically recompile your code when it
