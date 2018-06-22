@@ -3,6 +3,7 @@ package runtime
 import (
 	"crypto/tls"
 	"fmt"
+	"html/template"
 	"io"
 	"net"
 	"net/http"
@@ -76,7 +77,12 @@ func (p *proxy) Close() error {
 func (p *proxy) defaultHandler(res http.ResponseWriter, req *http.Request) {
 	errors := p.builder.Errors()
 	if len(errors) > 0 {
-		res.Write([]byte(errors))
+		t := template.Must(template.New("errors").Parse(tplError))
+		safe := template.HTMLEscapeString(errors)
+		safe = strings.Replace(safe, "\n", "<br>", -1)
+		if err := t.Execute(res, template.HTML(safe)); err != nil {
+			res.Write([]byte(errors))
+		}
 	} else {
 		p.runner.Run()
 		if strings.ToLower(req.Header.Get("Upgrade")) == "websocket" || strings.ToLower(req.Header.Get("Accept")) == "text/event-stream" {
@@ -122,3 +128,34 @@ func proxyWebsocket(w http.ResponseWriter, r *http.Request, host *url.URL) {
 	go cp(nc, d)
 	<-errc
 }
+
+var tplError = `
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Build Error</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"> <i class="fas fa-sync-alt"></i> reload</a>
+        </div>
+      </div>
+    </nav>
+    <br/>
+    <div class="container">
+      <div class="jumbotron">
+        <h1><i class="fa fa-exclamation-circle text-danger"></i> Build Failed</h1>
+        <p class="bg-danger">
+          {{ . }}
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+`
