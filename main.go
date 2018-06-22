@@ -28,7 +28,7 @@ func main() {
 		},
 		cli.IntFlag{
 			Name:   "appPort,a",
-			Value:  3001,
+			Value:  8080,
 			EnvVar: "BIN_APP_PORT",
 			Usage:  "Port for the Go web server",
 		},
