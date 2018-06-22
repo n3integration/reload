@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/n3integration/reload/test"
@@ -111,5 +112,6 @@ func Test_Proxying_Build_Errors(t *testing.T) {
 	test.Expect(t, res == nil, false)
 	errors, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
-	test.Expect(t, fmt.Sprintf("%s", errors), "Foo bar here are some errors")
+	test.Expect(t, strings.Contains(fmt.Sprintf("%s", errors), builder.MockErrors), true)
+	//test.Expect(t, strings.Contains(builder.MockErrors, fmt.Sprintf("%s", errors), "Foo bar here are some errors")
 }
