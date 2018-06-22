@@ -190,10 +190,12 @@ func shutdown(runner runtime.Runner) {
 		if err != nil {
 			log.Print("failed to terminate: ", err)
 		}
-		f, _ := runner.Info()
-		if err := os.Remove(f.Name()); err != nil {
-			log.Println("failed to cleanup:", err)
+		if f, err := runner.Info(); err == nil {
+			if err := os.Remove(f.Name()); err != nil {
+				log.Println("failed to cleanup:", err)
+			}
 		}
+
 		log.Print("exiting")
 		os.Exit(1)
 	}()
